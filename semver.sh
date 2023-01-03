@@ -17,7 +17,7 @@ main() {
   while getopts "bchmMp" opt; do
     case ${opt} in
       b )
-        base
+        base "$@"
         ;;
       c )
         custom "$@"
@@ -73,11 +73,15 @@ base() {
   local BASE="1.0.0" 
   if [ "$ENV" = "dev" ]; then
     echo $BASE > "./version/dev.txt"
+    badge $BASE "dev"
   elif [ "$ENV" = "stable" ]; then
     echo $BASE > "./version/stable.txt"
+    badge $BASE "stable"
   else
     echo $BASE > "./version/dev.txt"
     echo $BASE > "./version/stable.txt"
+    badge $BASE "dev"
+    badge $BASE "stable"
     ENV="ALL"
   fi
   echo "${ENV}: ${BASE}"
@@ -89,11 +93,15 @@ custom() {
   local ENV=$3
   if [ "$ENV" = "dev" ]; then
     echo $BASE > "./version/dev.txt"
+    badge $BASE "dev"
   elif [ "$ENV" = "stable" ]; then
     echo $BASE > "./version/stable.txt"
+    badge $BASE "stable"
   else
     echo $BASE > "./version/dev.txt"
     echo $BASE > "./version/stable.txt"
+    badge $BASE "dev"
+    badge $BASE "stable"
     ENV="ALL"
   fi
   echo "${ENV}: ${BASE}"
@@ -105,6 +113,8 @@ major(){
   local FILE="./version/stable.txt"
   if [ "$ENV" = "dev" ]; then
     FILE="./version/dev.txt"
+  else
+    ENV="stable"
   fi
   local VERSION=$(cat $FILE)
   echo "Version: ${VERSION}"
@@ -112,7 +122,7 @@ major(){
   
   MAJOR=$(($MAJOR + 1))
   VERSION="${MAJOR}.0.0"
-  badge $VERSION "stable"
+  badge $VERSION $ENV
   echo $VERSION > $FILE
   echo "New: ${VERSION}"
 }
@@ -123,6 +133,8 @@ minor(){
   local FILE="./version/stable.txt"
   if [ "$ENV" = "dev" ]; then
     FILE="./version/dev.txt"
+  else
+    ENV="stable"
   fi
   local VERSION=$(cat $FILE)
   echo "Version: ${VERSION}"
@@ -132,7 +144,7 @@ minor(){
   
   MINOR=$(($MINOR + 1))
   VERSION="${MAJOR}.${MINOR}.0"
-  badge $VERSION "dev"
+  badge $VERSION $ENV
   echo $VERSION > $FILE
   echo "New: ${VERSION}"
 }
@@ -143,6 +155,8 @@ patch(){
   local FILE="./version/stable.txt"
   if [ "$ENV" = "dev" ]; then
     FILE="./version/dev.txt"
+  else
+    ENV="stable"
   fi
   local VERSION=$(cat $FILE)
   echo "Version: ${VERSION}"
@@ -152,7 +166,7 @@ patch(){
   
   PATCH=$(($PATCH + 1))
   VERSION="${MAJOR}.${MINOR}.${PATCH}"
-  badge $VERSION "dev"
+  badge $VERSION $ENV
   echo $VERSION > $FILE
   echo "New: ${VERSION}"
 }
